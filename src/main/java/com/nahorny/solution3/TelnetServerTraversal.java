@@ -25,12 +25,11 @@ class TelnetServerTraversal {
     private static final Exchanger<Object> EXCHANGER = new Exchanger<>();
 
     public static void main(String[] args) {
+
         //-----------------start, get port and root
-
-
         Scanner scanner = new Scanner(System.in);
         String[] rootPath = new String[1];
-        int port;
+        int port = -1;
 
         System.out.println("Application search node in the file system, that contains a specific string (mask) in name "
                 + "and is located on a specific depth from the root directory."
@@ -44,11 +43,16 @@ class TelnetServerTraversal {
         }
         while (rootPath[0].length() < MIN_PATH_LENGTH);
 
+        boolean isPortValid = false;
         do {
             System.out.print("Please, enter port (number between 0 and 32_767, be sure you chose not reserved port): ");
-            port = scanner.nextInt();
+            long portLong = scanner.nextInt();
+            if ((portLong > 0) && (portLong < 32768)) {
+                port = (int) portLong;
+                isPortValid = true;
+            }
         }
-        while (!isPortValid(port));
+        while (!isPortValid);
         FileSystemHandler.getInstance(EXCHANGER).start();
 
         //-----------------server init
@@ -100,8 +104,4 @@ class TelnetServerTraversal {
 
     }
 
-    private static boolean isPortValid(int port) {
-        return port > 0 && port < 32768;
-    }
 }
-
