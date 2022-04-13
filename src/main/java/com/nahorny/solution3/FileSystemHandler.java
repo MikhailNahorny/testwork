@@ -8,7 +8,7 @@ import java.io.File;
 import java.util.concurrent.Exchanger;
 
 public class FileSystemHandler extends Thread {
-    private Exchanger<Object> ex;
+    private final Exchanger<Object> ex;
 
     private static volatile FileSystemHandler instance;
 

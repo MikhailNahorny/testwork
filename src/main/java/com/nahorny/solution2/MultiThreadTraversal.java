@@ -15,7 +15,10 @@ import java.util.Scanner;
 import java.util.concurrent.Exchanger;
 
 class MultiThreadTraversal {
-    static Exchanger<String> ex = new Exchanger<>();
+    private static final int MIN_PATH_LENGTH = 4;
+    private static final int MIN_MASK_LENGTH = 2;
+    private static final int MIN_DEPTH = 0;
+    private static final Exchanger<String> ex = new Exchanger<>();
 
     public static void main(String[] args) {
         new ResultIndicator(ex).start();
@@ -79,9 +82,7 @@ class MultiThreadTraversal {
         @Override
         public void run() {
             Thread.currentThread().setName("ResultIndicator");
-            final int minPathLength = 4;
-            final int minMaskLength = 2;
-            final int minDepth = 0;
+
             Scanner scanner = new Scanner(System.in);
             int depth;
             String mask;
@@ -93,17 +94,17 @@ class MultiThreadTraversal {
             do {
                 System.out.print("Please, enter path to root dir: ");
                 rootPath = scanner.nextLine();
-            } while (rootPath.length() < minPathLength);
+            } while (rootPath.length() < MIN_PATH_LENGTH);
 
             do {
                 System.out.print("Please, enter mask (more, than 1 character): ");
                 mask = scanner.nextLine();
-            } while (mask.length() < minMaskLength);
+            } while (mask.length() < MIN_MASK_LENGTH);
 
             do {
                 System.out.print("Please, enter depth (non-negative number): ");
                 depth = scanner.nextInt();
-            } while (depth < minDepth);
+            } while (depth < MIN_DEPTH);
 
             change(rootPath);
             change(mask);

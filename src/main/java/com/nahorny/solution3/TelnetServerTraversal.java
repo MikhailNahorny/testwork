@@ -19,13 +19,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 class TelnetServerTraversal {
 
+    private static final int MIN_PATH_LENGTH = 4;
+    private static final int MIN_MASK_LENGTH = 2;
+    private static final int MIN_DEPTH = 0;
+    private static final Exchanger<Object> ex = new Exchanger<>();
+
     public static void main(String[] args) {
         //-----------------start, get port and root
 
-        final int minPathLength = 4;
-        final int minMaskLength = 2;
-        final int minDepth = 0;
-        final Exchanger<Object> ex = new Exchanger<>();
+
         Scanner scanner = new Scanner(System.in);
         String[] rootPath = new String[1];
         int port;
@@ -40,7 +42,7 @@ class TelnetServerTraversal {
             System.out.print("Please, enter path to root dir (more, than 4 character): ");
             rootPath[0] = scanner.nextLine();
         }
-        while (rootPath[0].length() < minPathLength);
+        while (rootPath[0].length() < MIN_PATH_LENGTH);
 
         do {
             System.out.print("Please, enter port (number between 0 and 32_767, be sure you chose not reserved port): ");
@@ -55,15 +57,15 @@ class TelnetServerTraversal {
             System.out.println("-----find command was called");
             String[] argsAsArray = arguments.split(" ");
             int depth = Integer.parseInt(argsAsArray[0]);
-            if (depth < minDepth) {
+            if (depth < MIN_DEPTH) {
                 terminal.writeLine("Depth should not be less than zero.");
                 terminal.flush();
                 System.out.println(String.format("-----Invalid request. Depth = %d", depth));
                 return;
             }
             String mask = argsAsArray[1];
-            if (mask.length() < minMaskLength) {
-                terminal.writeLine(String.format("Mask length should not be less than %d.", minMaskLength));
+            if (mask.length() < MIN_MASK_LENGTH) {
+                terminal.writeLine(String.format("Mask length should not be less than %d.", MIN_MASK_LENGTH));
                 terminal.flush();
                 System.out.println(String.format("-----Invalid request. mask = '%s'", mask));
                 return;
