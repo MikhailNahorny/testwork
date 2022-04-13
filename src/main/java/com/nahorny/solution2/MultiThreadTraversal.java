@@ -18,17 +18,17 @@ class MultiThreadTraversal {
     private static final int MIN_PATH_LENGTH = 4;
     private static final int MIN_MASK_LENGTH = 2;
     private static final int MIN_DEPTH = 0;
-    private static final Exchanger<String> ex = new Exchanger<>();
+    private static final Exchanger<String> EXCHANGER = new Exchanger<>();
 
     public static void main(String[] args) {
-        new ResultIndicator(ex).start();
-        new Searcher(ex).start();
+        new ResultIndicator(EXCHANGER).start();
+        new Searcher(EXCHANGER).start();
     }
 
     private static String change(String message) {
         String res = null;
         try {
-            res = ex.exchange(message);
+            res = EXCHANGER.exchange(message);
         } catch (InterruptedException ignored) {
         }
         return res;

@@ -22,7 +22,7 @@ class TelnetServerTraversal {
     private static final int MIN_PATH_LENGTH = 4;
     private static final int MIN_MASK_LENGTH = 2;
     private static final int MIN_DEPTH = 0;
-    private static final Exchanger<Object> ex = new Exchanger<>();
+    private static final Exchanger<Object> EXCHANGER = new Exchanger<>();
 
     public static void main(String[] args) {
         //-----------------start, get port and root
@@ -49,7 +49,7 @@ class TelnetServerTraversal {
             port = scanner.nextInt();
         }
         while (!isPortValid(port));
-        FileSystemHandler.getInstance(ex).start();
+        FileSystemHandler.getInstance(EXCHANGER).start();
 
         //-----------------server init
         ShellServer srv = new ShellServer();
@@ -73,7 +73,7 @@ class TelnetServerTraversal {
             BlockingQueue<String> resq = new LinkedBlockingQueue<>();
             String root = rootPath[0];
 
-            new Searcher(ex, resq, depth, mask, root).start();
+            new Searcher(EXCHANGER, resq, depth, mask, root).start();
             terminal.writeLine("Search start. Results are:");
             terminal.flush();
 

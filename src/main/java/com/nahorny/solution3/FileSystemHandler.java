@@ -8,22 +8,22 @@ import java.io.File;
 import java.util.concurrent.Exchanger;
 
 public class FileSystemHandler extends Thread {
-    private final Exchanger<Object> ex;
+    private final Exchanger<Object> exchanger;
 
     private static volatile FileSystemHandler instance;
 
-    private FileSystemHandler(Exchanger<Object> ex) {
+    private FileSystemHandler(Exchanger<Object> exchanger) {
         if (instance != null) throw new RuntimeException("FileSystemHandler class should be singleton.");
-        this.ex = ex;
+        this.exchanger = exchanger;
         this.setDaemon(true);
         this.setName("FileSystemHandler");
         System.out.println("-----FileSystemHandler started");
     }
 
-    public static FileSystemHandler getInstance(Exchanger<Object> ex) {
+    public static FileSystemHandler getInstance(Exchanger<Object> exchanger) {
         if (instance == null) {
             synchronized (FileSystemHandler.class) {
-                if (instance == null) instance = new FileSystemHandler(ex);
+                if (instance == null) instance = new FileSystemHandler(exchanger);
             }
         }
         return instance;
@@ -34,9 +34,9 @@ public class FileSystemHandler extends Thread {
         while (true) {
             try {
                 String rootPath;
-                rootPath = (String) ex.exchange(null);
+                rootPath = (String) exchanger.exchange(null);
                 File rootFile = new File(rootPath);
-                ex.exchange(rootFile);
+                exchanger.exchange(rootFile);
             } catch (InterruptedException ignored) {
             }
         }

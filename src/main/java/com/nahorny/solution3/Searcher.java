@@ -8,19 +8,19 @@ import java.util.concurrent.Exchanger;
 import java.util.concurrent.TimeUnit;
 
 public class Searcher extends Thread {
-    private Exchanger<Object> ex;
-    private BlockingQueue<String> resultQ;
+    private Exchanger<Object> exchanger;
+    private BlockingQueue<String> resultQueue;
     private int depth;
     private String mask;
     private String rootDir;
 
 
-    public Searcher(Exchanger<Object> ex, BlockingQueue<String> resultQ, int depth, String mask, String rootDir) {
-        this.ex = ex;
+    public Searcher(Exchanger<Object> exchanger, BlockingQueue<String> resultQueue, int depth, String mask, String rootDir) {
+        this.exchanger = exchanger;
         this.depth = depth;
         this.mask = mask;
         this.rootDir = rootDir;
-        this.resultQ = resultQ;
+        this.resultQueue = resultQueue;
         this.setName("Searcher");
     }
 
@@ -37,31 +37,29 @@ public class Searcher extends Thread {
         FileAndDepthStorage ss = new FileAndDepthStorage(root, 0);
         queue.add(ss);
         while (!queue.isEmpty()) {
-pause();
             FileAndDepthStorage current = queue.poll();
             File[] listOfFilesAndDirectory = current.file.listFiles();
 
             if (listOfFilesAndDirectory != null) {
                 for (File file : listOfFilesAndDirectory) {
-pause();
                     if (file.isDirectory() && current.depth + 1 <= depth) {
                         queue.add(new FileAndDepthStorage(file, current.depth + 1));
                     }
                     if (depth == current.depth && file.getName().contains(mask)) {
                         System.out.println(file);
-                        resultQ.add(file.toString());
+                        resultQueue.add(file.toString());
                     }
                 }
             }
         }
-        resultQ.add("@END_OF_SEARCH");
+        resultQueue.add("@END_OF_SEARCH");
         System.out.println("-----end of search.");
     }
 
     private Object change(Object object) {
         Object res = null;
         try {
-            res = ex.exchange(object);
+            res = exchanger.exchange(object);
         } catch (InterruptedException ignored) {
         }
         return res;
@@ -75,13 +73,6 @@ pause();
             this.file = file;
             this.depth = depth;
         }
-    }
-
-    private void pause() {
-        try{
-            TimeUnit.MILLISECONDS.sleep(200);
-        } catch (InterruptedException ignored){}
-
     }
 
 }
